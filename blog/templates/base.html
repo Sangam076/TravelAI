@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    {% load static %}
+    {% static "images" as baseUrl %}
+    <meta charset="UTF-8">
+    <title>{%block title%}{% endblock %} | TravelAI Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed w-full top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="{% url 'home' %}" class="text-2xl font-semibold">
+                        Travel<span class="text-blue-700 font-bold italic">AI</span>
+                    </a>
+                </div>
+
+                <div class="hidden lg:flex lg:items-center lg:space-x-8">
+                    <a href="{% url 'home'%}" class="text-gray-700 hover:text-blue-600">Home</a>
+                    <a href="{% url 'about' %}" class="text-gray-700 hover:text-blue-600">About us</a>
+                    {% if user.username %}
+    <a href="{% url 'chat' room_name=user.username %}" class="text-gray-700 hover:text-blue-600">Travel Community</a>
+{% else %}
+    <span class="text-gray-400">Travel Commnunity</span>
+{% endif %}
+                    <a href="{% url 'create_plan' %}" class="text-gray-700 hover:text-blue-600">Travel Plans</a>
+                    
+                    <div class="flex items-center space-x-2">
+                        {% if user.is_authenticated %}
+                            <a href="{%url 'travel_guide' %}">Travel Guide</a>
+                            <a href="{% url 'travel_booking' %}">Travel Booking</a>
+                            <a class="pl-4" href="{% url 'saved_plans' %}">Profile</a>
+                            
+                        {% else %}
+                            <a href="{% url 'login' %}">Generate Plan</a>
+                        {% endif %}
+                    </div>
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">
+                            Logout
+                        </a>
+                    {% else %}
+                        <div class="relative inline-block text-left" x-data="{ open: false }">
+                            <button @click="open = !open" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">
+                                Get Started
+                            </button>
+                            
+                            <!-- Dropdown menu -->
+                            <div x-show="open" 
+                                @click.away="open = false"
+                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                                role="menu" 
+                                aria-orientation="vertical" 
+                                aria-labelledby="menu-button">
+                                <div class="py-1" role="none">
+                                    <a href="{% url 'login' %}" 
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600" 
+                                    role="menuitem">
+                                        Login
+                                    </a>
+                                    <a href="{% url 'register' %}" 
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600" 
+                                    role="menuitem">
+                                        Register
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="lg:hidden flex items-center">
+                    <button type="button" id="hamburgerMenu" class="text-gray-700 hover:text-gray-900">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-white">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#" class="block px-3 py-2 text-gray-700">Home</a>
+                <a href="#" class="block px-3 py-2 text-gray-700">About us</a>
+                <a href="#" class="block px-3 py-2 text-gray-700">Travel Community</a>
+                <a href="#" class="block px-3 py-2 text-gray-700">Travel Plans</a>
+                <a href="#" class="block px-3 py-2 text-gray-700">Generate Plan</a>
+                <a href="#" class="block px-3 py-2 text-gray-700">Profile</a>
+                <a href="#" class="block px-3 py-2 text-blue-600">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-2 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-gray-900 font-semibold text-lg mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">Home</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">About us</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">Contact us</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">Get started</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-gray-900 font-semibold text-lg mb-4">Travel Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">FAQ</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">Travel Tips</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">Destinations</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">Reviews</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-gray-900 font-semibold text-lg mb-4">Plan</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">Generate Plan</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">Popular Itineraries</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600">Travel Guides</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-gray-900 font-semibold text-lg mb-4">Stay Updated</h3>
+                    <div class="space-y-4">
+                        <input type="email" placeholder="Enter your email" class="w-full px-4 py-2 border rounded-md">
+                        <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-md">Subscribe</button>
+                    </div>
+                    <h3 class="text-gray-900 font-semibold text-lg mt-6 mb-4">Follow Us On</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-600 hover:text-blue-600">
+                            <img src="{% static 'blog/facebook (1).png' %}" alt="Facebook" class="h-6 w-6">
+                        </a>
+                        <a href="#" class="text-gray-600 hover:text-blue-600">
+                            <img src="{% static 'blog/instagram (1).png' %}" alt="Instagram" class="h-6 w-6">
+                        </a>
+                        <a href="#" class="text-gray-600 hover:text-blue-600">
+                            <img src="{% static 'blog/twitter.png' %}" alt="Twitter" class="h-6 w-6">
+                        </a>
+                        <a href="#" class="text-gray-600 hover:text-blue-600">
+                            <img src="{% static 'blog/linkedin.png' %}" alt="LinkedIn" class="h-6 w-6">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-200">
+                <p class="text-center text-gray-600 text-sm">© Copyright. All rights reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const hamburgerMenu = document.getElementById("hamburgerMenu");
+        const mobileMenu = document.getElementById("mobileMenu");
+        
+        hamburgerMenu.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+        });
+
+        const carouselContent = document.getElementById('carousel-content');
+        const prevButton = document.getElementById('prev');
+        const nextButton = document.getElementById('next');
+        let currentIndex = 0;
+
+        prevButton?.addEventListener('click', () => {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : 2; 
+            carouselContent.style.transform = `translateX(-${currentIndex * 100}%)`;
+        });
+
+        nextButton?.addEventListener('click', () => {
+            currentIndex = (currentIndex < 2) ? currentIndex + 1 : 0; 
+            carouselContent.style.transform = `translateX(-${currentIndex * 100}%)`;
+        });
+    </script>
+</body>
+</html>

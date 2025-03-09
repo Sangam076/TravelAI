@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ hotel.name }} - Hotel Details{% endblock %}
+
+{% block content %}
+<div class="pt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if error %}
+            <div class="bg-white rounded-lg shadow-lg p-12 text-center">
+                <h2 class="text-2xl font-bold text-red-600 mb-4"><i class="fas fa-exclamation-triangle"></i> {{ error }}</h2>
+                <p class="text-gray-700 mb-6">We couldn't retrieve the hotel details at this time. Please try again later.</p>
+                <a href="{% url 'hotels' %}" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">Back to Hotels</a>
+            </div>
+        {% else %}
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="relative h-64 md:h-80 lg:h-96">
+                    {% if hotel.main_photo %}
+                        <img src="{{ hotel.main_photo }}" alt="{{ hotel.name }}" class="w-full h-full object-cover">
+                    {% elif hotel.photos %}
+                        <img src="{{ hotel.photos.0 }}" alt="{{ hotel.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <img src="#" alt="{{ hotel.name }}" class="w-full h-full object-cover">
+                    {% endif %}
+                    {% if hotel.preferred %}
+                        <div class="absolute top-4 right-4 bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-award mr-1"></i> Preferred Partner
+                        </div>
+                    {% endif %}
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent text-white p-6">
+                        <h2 class="text-2xl md:text-3xl font-bold mb-2">{{ hotel.name }}</h2>
+                        <div class="text-yellow-400 mb-2">
+                            {% for i in "12345"|slice:":hotel.star_rating" %}
+                                <i class="fas fa-star"></i>
+                            {% endfor %}
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>{{ hotel.address }}, {{ hotel.city }}, {{ hotel.country }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 pb-8 border-b border-gray-200">
+                        <div class="bg-gray-50 rounded-lg p-4 text-center">
+                            <i class="fas fa-medal text-blue-600 text-2xl mb-3"></i>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-1">Guest Rating</h4>
+                            <p class="text-gray-700">{{ hotel.review_score|default:"N/A" }}/10 - {{ hotel.review_text|default:"No reviews yet" }}</p>
+                            <p class="text-gray-600">From {{ hotel.num_reviews|default:"0" }} reviews</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 text-center">
+                            <i class="far fa-clock text-blue-600 text-2xl mb-3"></i>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-1">Check-in & Check-out</h4>
+                            <p class="text-gray-700">Check-in: {{ hotel.checkin_from }} - {{ hotel.checkin_to }}</p>
+                            <p class="text-gray-700">Check-out: {{ hotel.checkout_from }} - {{ hotel.checkout_to }}</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 text-center">
+                            <i class="fas fa-trophy text-blue-600 text-2xl mb-3"></i>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-1">Ranking</h4>
+                            <p class="text-gray-700">#{{ hotel.ranking|default:"N/A" }} in {{ hotel.city }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 pb-8 border-b border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 relative pb-2">
+                            About this Hotel
+                            <span class="absolute bottom-0 left-0 w-12 h-1 bg-blue-600"></span>
+                        </h3>
+                        <p class="text-gray-700 mb-4">{{ description }}</p>
+                        {% if hotel.review_score %}
+                        <div class="flex items-center mt-6 bg-gray-50 rounded-lg p-4">
+                            <div class="bg-blue-700 text-white w-16 h-16 flex items-center justify-center rounded-lg text-2xl font-bold">
+                                {{ hotel.review_score }}
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900">{{ hotel.review_text }}</h4>
+                                <p class="text-gray-600">Based on {{ hotel.num_reviews }} verified guest reviews</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+
+
+                    {% if hotel.languages_spoken %}
+                    <div class="mb-8 pb-8 border-b border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 relative pb-2">
+                            Languages Spoken
+                            <span class="absolute bottom-0 left-0 w-12 h-1 bg-blue-600"></span>
+                        </h3>
+                        <div class="flex flex-wrap gap-3">
+                            {% for language in hotel.languages_spoken %}
+                                <div class="bg-gray-50 rounded-full px-4 py-2 text-gray-700">
+                                    <i class="fas fa-language text-blue-600 mr-2"></i>{{ language }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-8 pb-8 border-b border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 relative pb-2">
+                            Photo Gallery
+                            <span class="absolute bottom-0 left-0 w-12 h-1 bg-blue-600"></span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {% if hotel.main_photo %}
+                                <img src="{{ hotel.main_photo }}" alt="{{ hotel.name }} - Main Photo" class="rounded-lg h-48 w-full object-cover transition-transform hover:scale-105 cursor-pointer">
+                            {% endif %}
+                            
+                            {% if hotel.entrance_photo %}
+                                <img src="{{ hotel.entrance_photo }}" alt="{{ hotel.name }} - Entrance" class="rounded-lg h-48 w-full object-cover transition-transform hover:scale-105 cursor-pointer">
+                            {% endif %}
+                            
+                            {% if hotel.photos %}
+                                {% for photo in hotel.photos %}
+                                    <img src="{{ photo }}" alt="{{ hotel.name }} - Photo {{ forloop.counter }}" class="rounded-lg h-48 w-full object-cover transition-transform hover:scale-105 cursor-pointer">
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-8 pb-8 border-b border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 relative pb-2">
+                            Location
+                            <span class="absolute bottom-0 left-0 w-12 h-1 bg-blue-600"></span>
+                        </h3>
+                        <p class="text-gray-700 mb-2"><strong>Address:</strong> {{ hotel.address }}, {{ hotel.city }}, {{ hotel.country }} {% if hotel.zip_code %}- {{ hotel.zip_code }}{% endif %}</p>
+                        {% if hotel.latitude and hotel.longitude %}
+                        <p class="text-gray-700 mb-4"><strong>Coordinates:</strong> {{ hotel.latitude }}, {{ hotel.longitude }}</p>
+                        <div class="rounded-lg overflow-hidden h-96 w-full">
+                            <iframe 
+                                frameborder="0" 
+                                src="https://www.google.com/maps?q={{ hotel.latitude }},{{ hotel.longitude }}&output=embed"
+                                class="w-full h-full">
+                            </iframe>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div class="mb-4 md:mb-0">
+                            <span class="text-gray-600 text-sm">View rates and availability</span>
+                            <div class="text-2xl font-bold text-gray-900">Check Prices <span class="text-sm font-normal">on Booking.com</span></div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                            <a href="{{ hotel.url }}" target="_blank" class="text-center border-2 border-blue-600 text-blue-600 px-6 py-2 rounded-full hover:bg-blue-50">View on Booking.com</a>
+                            <a href="{{ hotel.url }}" target="_blank" class="text-center bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex justify-between items-center">
+                <a href="{% url 'search_hotels' %}" class="inline-flex items-center border-2 border-blue-600 text-blue-600 px-6 py-2 rounded-full hover:bg-blue-50">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Hotels
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

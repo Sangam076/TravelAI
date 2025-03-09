@@ -1,0 +1,8 @@
+<h2>Search Hotels</h2>
+
+<form action="{% url 'search_hotels' %}" method="get">
+    <label for="city">Enter City:</label>
+    <input type="text" name="city" required>
+    
+    <button type="submit">Search</button>
+</form>

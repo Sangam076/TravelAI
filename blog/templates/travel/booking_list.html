@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>My Bookings</h2>
+    <div class="row">
+        {% for booking in bookings %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ booking.get_booking_type_display }}</h5>
+                    <p class="card-text">
+                        Booking ID: {{ booking.booking_id }}<br>
+                        Check-in: {{ booking.check_in }}<br>
+                        Check-out: {{ booking.check_out }}<br>
+                        Guests: {{ booking.guests }}<br>
+                        Total Price: ${{ booking.total_price }}<br>
+                        Status: {{ booking.get_status_display }}<br>
+                        Booked on: {{ booking.created_at }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

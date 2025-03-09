@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Car Rental Results</h2>
+
+        {% if error_message %}
+            <p class="text-red-500">{{ error_message }}</p>
+        {% elif cars %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for car in cars %}
+                    <div class="bg-white rounded-lg shadow-md p-4">
+                        <img src="{{ car.image_url }}" alt="Car Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">{{ car.vehicle_info.name }}</h3>
+                        <p class="text-gray-600">Type: {{ car.vehicle_info.category }}</p>
+                        <p class="text-gray-600">Seats: {{ car.vehicle_info.seats }}</p>
+                        <p class="text-gray-600">Price: <span class="font-bold text-green-600">{{ car.pricing_info.price }}</span> {{ car.pricing_info.currency }}</p>
+                        <p class="text-gray-600">Supplier: {{ car.supplier_info.name }}</p>
+                        <a href="{{ car.url }}" class="block mt-3 bg-blue-600 text-white py-2 text-center rounded-md hover:bg-blue-700">Book Now</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-700">No cars found for the selected location and dates.</p>
+        {% endif %}
+
+        <div class="mt-6">
+            <a href="{% url 'car_rental_search' %}" class="text-blue-500 hover:underline">Go Back</a>
+        </div>
+    </div>
+
+</body>
+</html>

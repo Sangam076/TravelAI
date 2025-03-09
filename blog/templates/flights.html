@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Flight Search Results{% endblock %}
+
+{% block content %}
+<div class="pt-20 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Flight Search Results</h1>
+            <p class="text-gray-600 mt-2">Find your perfect flight</p>
+        </div>
+        
+        {% if search_details %}
+        <div class="bg-white rounded-lg shadow-md mb-8 overflow-hidden">
+            <div class="bg-blue-600 text-white px-6 py-3">
+                <h5 class="font-semibold">Search Details</h5>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div>
+                        <span class="text-gray-500 text-sm">From</span>
+                        <p class="font-semibold">{{ search_details.from_id }}</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 text-sm">To</span>
+                        <p class="font-semibold">{{ search_details.to_id }}</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 text-sm">Date</span>
+                        <p class="font-semibold">{{ search_details.departure_date }}</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 text-sm">Class</span>
+                        <p class="font-semibold">{{ search_details.flight_class }}</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 text-sm">Stops</span>
+                        <p class="font-semibold">{{ search_details.number_of_stops }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if error_message %}
+        <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-8">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h4 class="text-lg font-medium text-red-800">Error</h4>
+                    <p class="mt-1 text-red-700">{{ error_message }}</p>
+                    
+                    {% if api_status %}
+                    <p class="mt-2"><strong>API Status:</strong> {{ api_status }}</p>
+                    {% endif %}
+                    
+                    {% if keys_available %}
+                    <p class="mt-2"><strong>Available Keys:</strong> {{ keys_available }}</p>
+                    {% endif %}
+                    
+                    {% if data_keys %}
+                    <p class="mt-2"><strong>Data Keys:</strong> {{ data_keys }}</p>
+                    {% endif %}
+                    
+                    {% if error_traceback %}
+                    <div class="mt-4 border border-red-200 rounded-md">
+                        <p class="p-3 bg-red-100 border-b border-red-200 font-medium">Error Details</p>
+                        <pre class="p-4 text-sm bg-white overflow-x-auto">{{ error_traceback }}</pre>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% elif flights %}
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-gray-800">{{ flights|length }} flights found</h2>
+                
+            </div>
+            
+            {% for flight in flights %}
+            <div class="bg-white rounded-lg shadow-md mb-6 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-b">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-blue-100 flex items-center justify-center rounded-full">
+                            <span class="text-blue-600 font-bold">{{ flight.airline_code }}</span>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-semibold text-gray-900">{{ flight.airline }} {{ flight.flight_id }}</h3>
+                            {% if flight.operating_airline != flight.airline and flight.operating_airline != "N/A" %}
+                            <p class="text-sm text-gray-500">Operated by {{ flight.operating_airline }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <span class="inline-flex px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">{{ flight.cabin_class }}</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Departure Info -->
+                        <div>
+                            <p class="text-sm text-gray-500">Departure</p>
+                            <h4 class="text-xl font-bold mt-1">{{ flight.departure_time }}</h4>
+                            <p class="mt-1">
+                                {{ flight.departure_airport }} 
+                                <span class="font-semibold text-gray-700">({{ flight.departure_code }})</span>
+                            </p>
+                        </div>
+                        
+                        <!-- Flight Info -->
+                        <div class="flex flex-col items-center justify-center">
+                            <div class="relative w-full flex items-center justify-center py-4">
+                                <div class="absolute h-px bg-gray-300 w-full"></div>
+                                <div class="bg-white px-3 z-10">
+                                    <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="text-center text-gray-600">Duration: {{ flight.duration }}</p>
+                            {% if flight.aircraft_type != "N/A" %}
+                            <p class="text-center text-sm text-gray-500 mt-1">Aircraft: {{ flight.aircraft_type }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Arrival Info -->
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500">Arrival</p>
+                            <h4 class="text-xl font-bold mt-1">{{ flight.arrival_time }}</h4>
+                            <p class="mt-1">
+                                {{ flight.arrival_airport }}
+                                <span class="font-semibold text-gray-700">({{ flight.arrival_code }})</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
+                    <div>
+                        <span class="text-sm text-gray-500">Flight Number:</span>
+                        <span class="font-medium">{{ flight.flight_id }}</span>
+                    </div>
+                    {% if flight.shareable_url != "N/A" %}
+                    <a href="{{ flight.shareable_url }}" target="_blank" class="inline-flex px-5 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors duration-200">
+                        View Details
+                    </a>
+                    {% else %}
+                    <button class="inline-flex px-5 py-2 bg-gray-200 text-gray-500 rounded-full cursor-not-allowed">
+                        Details Unavailable
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h4 class="text-lg font-medium text-yellow-800">No Flights Found</h4>
+                    <p class="mt-1 text-yellow-700">No flights match your search criteria. Please try different search parameters.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="mt-8 flex justify-center">
+            <a href="{% url 'travel_booking' %}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                New Search
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

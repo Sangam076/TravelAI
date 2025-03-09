@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Travel Guide{% endblock %}
+
+{% block content %}
+<div class="pt-20 min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">AI Travel Guide</h1>
+            <p class="text-lg text-gray-600">Discover amazing places with our AI-powered travel assistant</p>
+        </div>
+
+        <!-- Search Section -->
+        <div class="max-w-3xl mx-auto mb-12">
+            <div class="flex gap-4">
+                <input 
+                    type="text" 
+                    id="placeInput" 
+                    class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter a place name (e.g., Taj Mahal, Eiffel Tower...)"
+                    list="popularPlaces"
+                >
+                <datalist id="popularPlaces">
+                    <option value="Taj Mahal">
+                    <option value="Eiffel Tower">
+                    <option value="Great Wall of China">
+                </datalist>
+                <button 
+                    onclick="fetchPlaceInfo()" 
+                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
+                >
+                    Get Info
+                </button>
+            </div>
+        </div>
+
+        <!-- Popular Destinations -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6">Popular Destinations</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="popularDestinations">
+                <!-- Destinations will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Information Display Section -->
+        <div class="bg-white rounded-xl shadow-sm p-8">
+            <div id="loadingIndicator" class="hidden">
+                <div class="flex items-center justify-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="ml-4 text-gray-600">Fetching information...</span>
+                </div>
+            </div>
+            <div id="infoContainer">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Destination Information</h2>
+                <div id="info" class="prose max-w-none text-gray-600">
+                    Enter a destination above or select from popular destinations to get detailed information.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Cache for storing fetched information
+    const infoCache = new Map();
+    
+    // Popular destinations data
+    const popularDestinations = [
+        { name: 'Taj Mahal', location: 'Agra, India' },
+        { name: 'Eiffel Tower', location: 'Paris, France' },
+        { name: 'Great Wall of China', location: 'China' }
+    ];
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Populate popular destinations
+        renderPopularDestinations();
+        // Preload popular destinations data
+        preloadPopularDestinations();
+    });
+
+    function renderPopularDestinations() {
+        const container = document.getElementById('popularDestinations');
+        popularDestinations.forEach(dest => {
+            const button = document.createElement('button');
+            button.className = 'p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition duration-200 text-left';
+            button.innerHTML = `
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">${dest.name}</h3>
+                <p class="text-gray-600">${dest.location}</p>
+            `;
+            button.onclick = () => fetchInfo(dest.name);
+            container.appendChild(button);
+        });
+    }
+
+    async function preloadPopularDestinations() {
+        // Fetch data for popular destinations in parallel
+        const promises = popularDestinations.map(dest => 
+            fetchInfoWithCache(dest.name, true)
+        );
+        await Promise.all(promises);
+    }
+
+    function showLoading() {
+        document.getElementById('loadingIndicator').classList.remove('hidden');
+        document.getElementById('infoContainer').classList.add('hidden');
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingIndicator').classList.add('hidden');
+        document.getElementById('infoContainer').classList.remove('hidden');
+    }
+
+    function fetchPlaceInfo() {
+        const place = document.getElementById('placeInput').value;
+        if (place.trim()) {
+            fetchInfo(place);
+        }
+    }
+
+    async function fetchInfoWithCache(place, preload = false) {
+        if (!preload && infoCache.has(place)) {
+            document.getElementById("info").innerHTML = infoCache.get(place);
+            return;
+        }
+
+        if (!preload) showLoading();
+
+        try {
+            const response = await fetch(`{% url 'get_place_info' %}?place=${encodeURIComponent(place)}`);
+            const data = await response.json();
+            
+            // Store in cache
+            infoCache.set(place, data.info);
+            
+            if (!preload) {
+                document.getElementById("info").innerHTML = data.info;
+                hideLoading();
+            }
+        } catch (error) {
+            if (!preload) {
+                document.getElementById("info").textContent = 
+                    "Sorry, we couldn't fetch information for this destination. Please try again later.";
+                hideLoading();
+            }
+        }
+    }
+
+    function fetchInfo(place) {
+        fetchInfoWithCache(place);
+    }
+
+    // Debounce function for search input
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Add event listeners
+    document.getElementById('placeInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            fetchPlaceInfo();
+        }
+    });
+
+    // Auto-suggest as user types (debounced)
+    document.getElementById('placeInput').addEventListener('input', 
+        debounce(function(e) {
+            if (e.target.value.length >= 3) {
+                fetchInfo(e.target.value);
+            }
+        }, 500)
+    );
+</script>
+{% endblock %}

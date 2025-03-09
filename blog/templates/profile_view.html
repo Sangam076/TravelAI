@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %} Profile {% endblock %}
+{% block content %}
+<!-- Main Profile Container -->
+<div class="max-w-4xl mx-auto mt-16 mb-16 p-6">
+<!-- Profile Header Section -->
+<div class="flex flex-col md:flex-row items-center md:items-start bg-white rounded-sm shadow-sm p-8 space-y-6 md:space-y-0 md:space-x-8">
+    <!-- Profile Photo -->
+    <div class="w-32 h-32 rounded-full overflow-hidden mb-6 md:mb-0">
+        <img src="{{ profile.photo.url }}" 
+             alt="{{ profile.user.username }}'s photo" 
+             class="w-full h-full object-cover">
+    </div>
+
+    <!-- Profile Info -->
+    <div class="flex-grow space-y-4">
+        <!-- Username -->
+        <h1 class="text-3xl font-semibold text-gray-900">{{ profile.user.username }}</h1>
+
+        <!-- Bio -->
+        <p class="text-lg text-gray-600 max-w-lg">{{ profile.bio|default:"This user prefers to keep things simple." }}</p>
+
+        <!-- Profile Stats -->
+        <div class="flex space-x-6 text-gray-600">
+            <div><span class="font-semibold">{{ posts.count }}</span> Posts</div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="flex space-x-6 text-gray-600">
+            {% if profile.instagram %}
+            <a href="{{ profile.instagram }}" class="hover:text-pink-500 transition duration-300">Instagram</a>
+            {% endif %}
+            {% if profile.twitter %}
+            <a href="{{ profile.twitter }}" class="hover:text-blue-400 transition duration-300">Twitter</a>
+            {% endif %}
+            {% if profile.facebook %}
+            <a href="{{ profile.facebook }}" class="hover:text-blue-600 transition duration-300">Facebook</a>
+            {% endif %}
+            {% if profile.linkedin %}
+            <a href="{{ profile.linkedin }}" class="hover:text-blue-500 transition duration-300">LinkedIn</a>
+            {% endif %}
+        </div>
+
+        <!-- Edit Profile Button (Only for the owner) -->
+        {% if is_owner %}
+        <div>
+            <button onclick="toggleEditForm()" 
+                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300">
+                Edit Profile
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+
+
+    <!-- Edit Profile Modal/Form -->
+    {% if is_owner %}
+    <div id="editProfileForm" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
+            <div class="bg-white rounded-lg shadow-xl p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Edit Profile</h2>
+                    <button onclick="toggleEditForm()" class="text-gray-500 hover:text-gray-700">×</button>
+                </div>
+                <form method="post" enctype="multipart/form-data" class="space-y-4">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Posts Grid -->
+    <div class="mt-8">
+        <div class="grid grid-cols-3 gap-1 md:gap-4">
+            {% for post in posts %}
+            <div class="relative aspect-square group">
+                {% if post.image %}
+                <img src="{{ post.image.url }}" 
+                     alt="{{ post.title }}"
+                     class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <div class="text-white text-center p-4">
+                        <h3 class="font-semibold text-sm mb-2">{{ post.title }}</h3>
+                        <div class="space-x-2">
+                        <a href="{% url 'update_post' post.id %}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                            Edit
+                        </a>
+                        <a href="{% url 'delete_post' post.id %}" class="inline-block bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm">
+                            Delete
+                        </a>
+                    </div>
+                        <a href="{% url 'blog_detail' post.id %}" class="text-xs underline">Read More</a>
+                        <div class="mt-2 text-xs">
+                            <p>{{ post.created_at|date:"M d, Y" }}</p>
+                            <p>{{ post.category }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-gray-500">No Image</span>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="col-span-3 py-8 text-center text-gray-500">
+                <p class="text-lg">No posts yet</p>
+                {% if is_owner %}
+                <p class="text-sm mt-2">Share your first blog post!</p>
+                <a href="{% url 'create' %}" class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Create Post
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleEditForm() {
+    const form = document.getElementById('editProfileForm');
+    form.classList.toggle('hidden');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Travel Plan{% endblock %}
+
+{% block content %}
+<div class="pt-20 pb-12 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Create Your Perfect Travel Plan</h1>
+            <p class="text-lg text-gray-600">Let AI help you plan your dream vacation</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg max-w-2xl mx-auto p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.destination.id_for_label }}">
+                        Where would you like to go?
+                    </label>
+                    <input type="text" name="destination" id="{{ form.destination.id_for_label }}" 
+                           class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           value="{{ form.destination.value|default:'' }}" required>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.duration.id_for_label }}">
+                        How many days are you planning to stay?
+                    </label>
+                    <input type="number" name="duration" id="{{ form.duration.id_for_label }}" 
+                           class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                           value="{{ form.duration.value|default:'' }}" required>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.budget.id_for_label }}">
+                        What's your budget range?
+                    </label>
+                    <select name="budget" id="{{ form.budget.id_for_label }}" 
+                            class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">Select a budget range</option>
+                        {% for value, label in form.fields.budget.choices %}
+                            <option value="{{ value }}" {% if form.budget.value == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.interests.id_for_label }}">
+                        What are your interests?
+                    </label>
+                    <textarea name="interests" id="{{ form.interests.id_for_label }}" 
+                              class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                              rows="3" placeholder="Enter interests separated by commas (e.g., beach, hiking, food)" required>{{ form.interests.value|default:'' }}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.group_type.id_for_label }}">
+                        Who are you traveling with?
+                    </label>
+                    <select name="group_type" id="{{ form.group_type.id_for_label }}" 
+                            class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">Select group type</option>
+                        {% for value, label in form.fields.group_type.choices %}
+                            <option value="{{ value }}" {% if form.group_type.value == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition duration-200">
+                    Generate My Travel Plan
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

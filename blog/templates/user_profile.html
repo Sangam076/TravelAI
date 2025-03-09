@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat - {{ room_name }}{% endblock %}
+
+{% block content %}
+<div class="mt-24 mb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex h-[calc(100vh-160px)] mt-16"> 
+        <!-- Sidebar -->
+        <div class="w-80 bg-white border-r border-gray-200 flex flex-col rounded-l-lg shadow-sm">
+            <!-- Sidebar Header -->
+            <div class="p-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">Messages</h2>
+            </div>
+
+            <!-- Contacts List -->
+            <div class="flex-1 overflow-y-auto">
+                {% for user in users %}
+                <a href="{% url 'chat' user.username %}" 
+                   class="block px-4 py-3 hover:bg-gray-50 {% if user.username == room_name %}bg-blue-50{% endif %}">
+                    <div class="flex items-center space-x-3">
+                        <!-- Modified Avatar Display -->
+                        <div class="h-10 w-10 rounded-full flex items-center justify-center text-white font-medium"
+                             style="background-color: {% if forloop.counter|divisibleby:2 %}#4F46E5{% else %}#E11D48{% endif %}">
+                            {{ user.username|slice:":2"|upper }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-baseline">
+                                <h3 class="text-sm font-medium text-gray-900 truncate">{{ user.username }}</h3>
+                                {% with last_msg=user.sent_messages.last %}
+                                    {% if last_msg %}
+                                        <span class="text-xs text-gray-500">{{ last_msg.timestamp|date:"H:i" }}</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                            <p class="text-sm text-gray-500 truncate">
+                                {% with last_msg=user.sent_messages.last %}
+                                    {% if last_msg %}
+                                        {% if last_msg.sender == request.user %}You: {% endif %}
+                                        {{ last_msg.content|truncatewords:5 }}
+                                    {% else %}
+                                        No messages yet
+                                    {% endif %}
+                                {% endwith %}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            <!-- User Profile -->
+            <div class="p-4 border-t border-gray-200 bg-gray-50 rounded-bl-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&size=64&background=random"
+                             class="h-8 w-8 rounded-full"
+                             alt="Your avatar">
+                        <span class="text-sm font-medium text-gray-900">{{ request.user.username|title }}</span>
+                    </div>
+                    <a href="{% url 'logout' %}" 
+                       class="text-sm text-red-600 hover:text-red-800">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="flex-1 flex flex-col bg-white border-t border-b border-r border-gray-200 rounded-r-lg shadow-sm">
+            <!-- Chat Header -->
+            <div class="flex items-center justify-between px-6 py-3 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <img src="https://ui-avatars.com/api/?name={{ room_name|urlencode }}&size=64&background=random"
+                         class="h-10 w-10 rounded-full"
+                         alt="{{ room_name }}'s avatar">
+                    <h2 class="text-lg font-medium text-gray-900">{{ room_name }}</h2>
+                </div>
+                
+                <!-- Search -->
+                <form method="GET" action="" class="max-w-xs">
+                    <input type="text"
+                           name="search"
+                           placeholder="Search messages..."
+                           value="{{ search_query }}"
+                           class="w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </form>
+            </div>
+
+            <!-- Messages -->
+            <div id="chatbox" class="flex-1 overflow-y-auto p-6 space-y-4">
+                {% if chats %}
+                    {% for message in chats %}
+                        <div class="flex {% if message.sender == request.user %}justify-end{% endif %}">
+                            <div class="max-w-sm {% if message.sender == request.user %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-900{% endif %} rounded-lg px-4 py-2 shadow">
+                                {{ message.content }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center text-gray-500">No messages yet. Start the conversation!</p>
+                {% endif %}
+            </div>
+
+            <!-- Message Input -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex space-x-3">
+                    <input type="text"
+                           id="my_input"
+                           class="flex-1 px-4 py-2 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Type your message...">
+                    <button id="submit_button"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{slug|json_script:"room_slug"}}
+
+<script>
+    function parseRedirectButtons() {
+    const messageElements = document.querySelectorAll('#chatbox > div > div');  // Select all message div elements
+
+    messageElements.forEach(messageEl => {
+        const messageText = messageEl.innerHTML;  // Use innerHTML to preserve formatting
+        const redirectMatch = messageText.match(/\[REDIRECT_BUTTON\](.*?)\n(.*?)\[\/REDIRECT_BUTTON\]/s);
+        
+        if (redirectMatch) {
+            const buttonText = redirectMatch[1].trim();
+            const redirectUrl = redirectMatch[2].trim();
+            
+            // Create button element
+            const button = document.createElement('button');
+            button.textContent = buttonText;
+            button.classList.add('redirect-button', 'mt-2', 'px-4', 'py-2', 'bg-blue-600', 'text-white', 'rounded-lg', 'hover:bg-blue-700');
+            
+            button.onclick = () => {
+                window.location.href = redirectUrl;
+            };
+            
+            // Remove the placeholder text and append the button
+            messageEl.innerHTML = messageEl.innerHTML.replace(
+                /\[REDIRECT_BUTTON\].*?\[\/REDIRECT_BUTTON\]/s, 
+                ''
+            );
+            messageEl.appendChild(button);
+        }
+    });
+}
+
+// Modify the onmessage handler to call parseRedirectButtons
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    
+    if (data.message && data.sender) {
+        const chatbox = document.querySelector("#chatbox");
+        const messageDiv = document.createElement("div");
+        
+        messageDiv.className = `flex ${data.sender === "{{ request.user.username }}" ? "justify-end" : "justify-start"}`;
+        messageDiv.innerHTML = `
+            <div class="max-w-sm ${data.sender === "{{ request.user.username }}" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"} rounded-lg px-4 py-2 shadow">
+                ${data.message}
+            </div>
+        `;
+        
+        chatbox.appendChild(messageDiv);
+        scrollToBottom();
+        parseRedirectButtons();  // Call this after adding new messages
+
+        // ... rest of the existing code ...
+    }
+};
+
+// Also call on page load
+document.addEventListener('DOMContentLoaded', parseRedirectButtons);
+// Call this function after messages are loaded
+document.addEventListener('DOMContentLoaded', parseRedirectButtons);
+    // JavaScript remains the same as in the previous version
+    const chatbox = document.querySelector("#chatbox");
+
+    function scrollToBottom() {
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    scrollToBottom();
+
+    const roomName = JSON.parse(document.getElementById("room_slug").textContent);
+    const chatSocket = new WebSocket("ws://" + window.location.host + "/ws/chat/{{ room_name }}/");
+
+    chatSocket.onopen = function(e) {
+        console.log("Connection established successfully!");
+    };
+
+    chatSocket.onclose = function(e) {
+        console.log("Connection closed unexpectedly!");
+    };
+
+    document.querySelector("#my_input").focus();
+    document.querySelector("#my_input").onkeyup = function(e) {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            document.querySelector("#submit_button").click();
+        }
+    };
+
+    document.querySelector("#submit_button").onclick = function(e) {
+        const messageInput = document.querySelector("#my_input").value;
+        
+        if (messageInput.trim().length === 0) {
+            return;
+        }
+        
+        chatSocket.send(JSON.stringify({
+            message: messageInput,
+            username: "{{ request.user.username }}",
+            room_name: "{{ room_name }}"
+        }));
+        
+        document.querySelector("#my_input").value = "";
+    };
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        
+        if (data.message && data.sender) {
+            const chatbox = document.querySelector("#chatbox");
+            const messageDiv = document.createElement("div");
+            
+            messageDiv.className = `flex ${data.sender === "{{ request.user.username }}" ? "justify-end" : "justify-start"}`;
+            messageDiv.innerHTML = `
+                <div class="max-w-sm ${data.sender === "{{ request.user.username }}" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"} rounded-lg px-4 py-2 shadow">
+                    ${data.message}
+                </div>
+            `;
+            
+            chatbox.appendChild(messageDiv);
+            scrollToBottom();
+
+            // Update last message in sidebar
+            const activeChat = document.querySelector('.bg-blue-50');
+            if (activeChat) {
+                const lastMessageElement = activeChat.querySelector('p');
+                if (lastMessageElement) {
+                    lastMessageElement.textContent = data.sender === "{{ request.user.username }}" 
+                        ? `You: ${data.message}` 
+                        : data.message;
+                }
+                
+                const timeElement = activeChat.querySelector('.text-xs');
+                if (timeElement) {
+                    const now = new Date();
+                    timeElement.textContent = now.getHours().toString().padStart(2, '0') + ':' + 
+                                            now.getMinutes().toString().padStart(2, '0');
+                }
+            }
+        }
+    };
+</script>
+{% endblock %}

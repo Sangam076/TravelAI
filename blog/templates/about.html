@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} About {% endblock %}
+{% block content %}
+<div class="mt-16">
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-wrap items-center mb-16">
+            <div class="w-full lg:w-1/2 pr-4">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    We are
+                    <span class="text-blue-600">TravelAI</span>
+                    <br>Your AI Travel Companion
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-600 mb-6">Where artificial intelligence meets wanderlust to create perfect travel experiences</p>
+                <a href="#" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">
+                    Try Our AI Planner
+                </a>
+            </div>
+            <div class="w-full lg:w-1/2 pt-16 mt-16 lg:mt-0">
+                <img src="{% static 'blog\Team.jpg' %}" alt="AI Travel Planning" class="rounded-lg shadow-lg">
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center pt-24 mb-16">
+            <div class="p-6 bg-white rounded-lg shadow">
+                <h2 class="text-4xl font-bold mb-2">50K+</h2>
+                <p class="text-gray-600">Travel Plans Generated</p>
+            </div>
+            <div class="p-6 bg-white rounded-lg shadow">
+                <h2 class="text-4xl font-bold mb-2">100+</h2>
+                <p class="text-gray-600">Destinations Covered</p>
+            </div>
+            <div class="p-6 bg-white rounded-lg shadow">
+                <h2 class="text-4xl font-bold mb-2">95%</h2>
+                <p class="text-gray-600">Traveler Satisfaction</p>
+            </div>
+        </div>
+
+        <!-- Why Choose Us Section -->
+        <div class="mb-16 pt-40">
+            <h2 class="text-3xl font-bold text-center mt-16 mb-12">WHY CHOOSE TRAVELAI?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center p-6 bg-white rounded-lg shadow">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                        <img src="{% static 'blog/AI.png' %}" alt="AI" class="h-8 w-8">
+                    </div>
+                    <h3 class="font-bold mb-2">Advanced AI Technology</h3>
+                    <p class="text-gray-600">Cutting-edge AI algorithms for personalized travel planning</p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-lg shadow">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                        <img src="{% static 'blog/real-time.png' %}" alt="Real-time" class="h-8 w-8">
+                    </div>
+                    <h3 class="font-bold mb-2">Real-Time Updates</h3>
+                    <p class="text-gray-600">Live weather, pricing, and availability information</p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-lg shadow">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                        <img src="{% static 'blog/group.png' %}" alt="Community" class="h-8 w-8">
+                    </div>
+                    <h3 class="font-bold mb-2">Community Driven</h3>
+                    <p class="text-gray-600">Access to local insights and traveler recommendations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meet the Team -->
+        <div class="mb-16 pt-40">
+            <h2 class="text-3xl font-bold text-center mb-12">MEET OUR TECH LEADERS</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <img src="{% static 'blog/Human 2.jpg' %}" alt="Emily Zhang" class="w-48 h-48 rounded-full mx-auto mb-4 object-cover">
+                    <h3 class="font-bold">James</h3>
+                    <p class="text-gray-600">AI Research Lead</p>
+                </div>
+                <div class="text-center">
+                    <img src="{% static 'blog/Human 4.jpg' %}" alt="Alex Kumar" class="w-48 h-48 rounded-full mx-auto mb-4 object-cover">
+                    <h3 class="font-bold">Alex Kumar</h3>
+                    <p class="text-gray-600">Product Director</p>
+                </div>
+                <div class="text-center">
+                    <img src="{% static 'blog/Human 5.jpg' %}" alt="Sophie Chen" class="w-48 h-48 rounded-full mx-auto mb-4 object-cover">
+                    <h3 class="font-bold">Sophie Chen</h3>
+                    <p class="text-gray-600">Data Science Lead</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Partners -->
+        <div class="mb-16 pt-40">
+            <h2 class="text-3xl font-bold text-center mb-12">JOIN US</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="text-center p-6 bg-white rounded-lg shadow">
+                    <div class="w-24 h-24 mx-auto mb-4">
+                        <img src="{% static 'blog/profile.png' %}" alt="Hotels" class="h-20 w-20 mx-auto">
+                    </div>
+                    <h3 class="font-bold mb-2">Product Manager Interns</h3>
+                    <p class="text-sm text-gray-600">BTech + MBA </p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-lg shadow">
+                    <div class="w-24 h-24 mx-auto mb-4">
+                        <img src="{% static 'blog/pen-tool.png' %}" alt="Airlines" class="h-20 w-20 mx-auto">
+                    </div>
+                    <h3 class="font-bold mb-2">Designer Intern</h3>
+                    <p class="text-sm text-gray-600">Graphic + UI/UX designers</p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-lg shadow">
+                    <div class="w-24 h-24 mx-auto mb-4">
+                        <img src="{% static 'blog/software.png' %}" alt="Activities" class="h-20 w-20 mx-auto">
+                    </div>
+                    <h3 class="font-bold mb-2">Software Developer Intern</h3>
+                    <p class="text-sm text-gray-600">Freshers</p>
+                </div>
+                <div class="text-center p-6 bg-white rounded-lg shadow">
+                    <div class="w-24 h-24 mx-auto mb-4">
+                        <img src="{% static 'blog/marketing.png' %}" alt="Transport" class="h-20 w-20 mx-auto">
+                    </div>
+                    <h3 class="font-bold mb-2">Marketing Intern</h3>
+                    <p class="text-sm text-gray-600">Bcom, MBA Grads</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

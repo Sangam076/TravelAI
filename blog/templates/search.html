@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Travel Booking{% endblock %}
+
+{% block content %}
+<div class="pt-20 pb-16">
+    <!-- Header Section -->
+    <div class="bg-blue-600 py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl font-bold text-white mb-4">Book Your Perfect Trip</h1>
+            <p class="text-xl text-white">Find and book hotels, flights, and car rentals all in one place</p>
+        </div>
+    </div>
+
+    <!-- Booking Options Tabs -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ activeTab: 'hotels' }">
+        <div class="flex border-b border-gray-200 mb-8">
+            <button 
+                @click="activeTab = 'hotels'" 
+                :class="{ 'border-b-2 border-blue-600 text-blue-600': activeTab === 'hotels' }"
+                class="px-8 py-4 font-medium text-lg hover:text-blue-600 focus:outline-none">
+                Hotels
+            </button>
+            <button 
+                @click="activeTab = 'flights'" 
+                :class="{ 'border-b-2 border-blue-600 text-blue-600': activeTab === 'flights' }"
+                class="px-8 py-4 font-medium text-lg hover:text-blue-600 focus:outline-none">
+                Flights
+            </button>
+            <button 
+                @click="activeTab = 'rentals'" 
+                :class="{ 'border-b-2 border-blue-600 text-blue-600': activeTab === 'rentals' }"
+                class="px-8 py-4 font-medium text-lg hover:text-blue-600 focus:outline-none">
+                Car Rentals
+            </button>
+        </div>
+
+        <!-- Hotel Booking Form -->
+        <div x-show="activeTab === 'hotels'" class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-semibold mb-6">Find Your Perfect Stay</h2>
+        <form action="{% url 'search_hotels' %}" method="GET" class="space-y-6">
+            
+            <!-- First Row: Destination, Check-in, Check-out -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="hotel-destination" class="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+                    <input type="text" id="hotel-destination" name="city" placeholder="City, region, or specific hotel" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="hotel-check-in" class="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
+                    <input type="date" id="hotel-check-in" name="checkin_date" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="hotel-check-out" class="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
+                    <input type="date" id="hotel-check-out" name="checkout_date" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+        </div>
+
+        <!-- Second Row: Adults, Children, Price Range -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="hotel-adults" class="block text-sm font-medium text-gray-700 mb-1">Adults</label>
+                <input type="number" id="hotel-adults" name="adults_number" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="hotel-children" class="block text-sm font-medium text-gray-700 mb-1">Children</label>
+                <input type="number" id="hotel-children" name="children_number" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="hotel-price" class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                <select id="hotel-price" name="currency" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <option value="AED">INR</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Search Button -->
+        <div class="flex justify-center">
+            <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Search Hotels
+            </button>
+        </div>
+    </form>
+</div>
+
+
+        <!-- Flight Booking Form -->
+        <div x-show="activeTab === 'flights'" class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-6">Book Your Flight</h2>
+            <form action="{% url 'get_flightid' %}" method="GET" class="space-y-6">
+                
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label for="flight-from" class="block text-sm font-medium text-gray-700 mb-1">From</label>
+                        <input type="text" id="flight-from" name="origin" placeholder="City or airport" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="flight-to" class="block text-sm font-medium text-gray-700 mb-1">To</label>
+                        <input type="text" id="flight-to" name="destination" placeholder="City or airport" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="flight-depart" class="block text-sm font-medium text-gray-700 mb-1">Depart</label>
+                        <input type="date" id="flight-depart" name="departure_date" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="flight-return" class="block text-sm font-medium text-gray-700 mb-1">Return</label>
+                        <input type="date" id="flight-return" name="return_date" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="flight-passengers" class="block text-sm font-medium text-gray-700 mb-1">No of Stops</label>
+                        <div class="relative">
+                            <select id="flight-passengers" name="stop_flight" class="w-full px-4 py-2 border rounded-md appearance-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="nonstop_flights">Nonstop Flights</option>
+                                <option value="maximum_allone_stop">Maximum One Stop</option>
+                                <option value="all">Both</option>
+                                
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="flight-class" class="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                        <select id="flight-class" name="flight_class" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            <option value="ECONOMY">Economy</option>
+                            <option value="PREMIUM_ECONOMY">Premium Economy</option>
+                            <option value="BUSINESS">Business</option>
+                            <option value="FIRST">First Class</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="flight-airline" class="block text-sm font-medium text-gray-700 mb-1">Preferred Airline (Optional)</label>
+                        <input type="text" id="flight-airline" name="airline" placeholder="Any airline" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Search Flights
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Car Rental Booking Form -->
+        <div x-show="activeTab === 'rentals'" class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-6">Rent a Car</h2>
+            <form action="{% url 'get_entity_id' %}" method="GET" class="space-y-6">
+            
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label for="rental-pickup" class="block text-sm font-medium text-gray-700 mb-1">Pick-up Location</label>
+                        <input type="text" id="rental-pickup" name="pickup_location" placeholder="City or airport" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="rental-dropoff" class="block text-sm font-medium text-gray-700 mb-1">Drop-off Location</label>
+                        <input type="text" id="rental-dropoff" name="dropoff_location" placeholder="Same as pick-up" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="rental-pickup-date" class="block text-sm font-medium text-gray-700 mb-1">Pick-up Date</label>
+                        <input type="date" id="rental-pickup-date" name="pickup_date" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="rental-dropoff-date" class="block text-sm font-medium text-gray-700 mb-1">Drop-off Date</label>
+                        <input type="date" id="rental-dropoff-date" name="dropoff_date" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <div>
+                        <label for="rental-dropoff-date" class="block text-sm font-medium text-gray-700 mb-1">Pickup time</label>
+                        <input type="time" id="rental-dropoff-date" name="pickup_time" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                        <label for="rental-dropoff-date" class="block text-sm font-medium text-gray-700 mb-1">Drop-off time</label>
+                        <input type="time" id="rental-dropoff-date" name="dropoff_time" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="rental-price" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <select name="from_country">
+                            <option value="IN">India</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="US">United States</option>
+                            <!-- Add more countries as needed -->
+                        </select>
+                    </div>
+                    
+                </div>
+                
+                <div class="flex justify-center">
+                    <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Search Car Rentals
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Booking Benefits Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <h2 class="text-3xl font-bold text-center mb-10">Why Book With TravelAI</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Best Price Guarantee</h3>
+                <p class="text-gray-600">Find a lower price? We'll match it and give you an additional 10% off.</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Secure Booking</h3>
+                <p class="text-gray-600">Your payment and personal information are always protected.</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">24/7 Support</h3>
+                <p class="text-gray-600">Our travel experts are available around the clock to assist you.</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Fast Booking</h3>
+                <p class="text-gray-600">Quick and easy booking process with instant confirmation.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter Signup -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <div class="bg-blue-600 rounded-lg p-8 md:p-12">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-white mb-3">Get Travel Deals & Updates</h2>
+                <p class="text-blue-100 mb-6">Sign up to receive exclusive travel deals, travel tips, and updates.</p>
+                <div class="flex flex-col sm:flex-row max-w-md mx-auto sm:max-w-lg">
+                    <input type="email" placeholder="Your email address" class="px-4 py-3 rounded-l-md w-full focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    <button class="bg-blue-800 text-white px-6 py-3 rounded-r-md font-medium hover:bg-blue-900 mt-2 sm:mt-0">
+                        Subscribe
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

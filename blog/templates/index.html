@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+{% block content %}
+{% load static %}
+
+    <main class="pt-16">
+        <!-- Hero Section -->
+        <section class="relative bg-gray-50 py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                        Plan Your Dream Trip<br>
+                        With AI Intelligence
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-2">
+                        Explore, Plan, Travel
+                    </p>
+                    <p class="pt-2 text-gray-600">
+                        Let our AI create personalized travel itineraries just for you!
+                    </p>
+                    <button class="bg-blue-600 text-white px-8 py-3 mt-4 rounded-full text-lg hover:bg-blue-700">
+                        Start Planning
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search and Filter -->
+        <div class="bg-gray-50 rounded-lg p-12 mb-12">
+            <form method="get" action="{% url 'home' %}">
+                <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                    <!-- Destination Input -->
+                    <input 
+                        type="text" 
+                        name="destination" 
+                        placeholder="Where do you want to go?" 
+                        value="{{ request.GET.destination }}" 
+                        class="w-1/3 px-4 py-2 rounded-md border"
+                    >
+
+                    <!-- Trip Type Dropdown -->
+                    <select 
+                        name="trip_type" 
+                        class="px-4 py-2 rounded-md border"
+                    >
+                        <option value="All Types" {% if request.GET.trip_type == "All Types" %}selected{% endif %}>
+                            All Trip Types
+                        </option>
+                        <option value="Adventure">Adventure</option>
+                        <option value="Relaxation">Relaxation</option>
+                        <option value="Cultural">Cultural</option>
+                        <option value="Family">Family</option>
+                        <option value="Romantic">Romantic</option>
+                    </select>
+
+                    <!-- Duration Dropdown -->
+                    <select 
+                        name="duration" 
+                        class="px-4 py-2 rounded-md border"
+                    >
+                        <option value="Any Duration">Any Duration</option>
+                        <option value="Weekend">Weekend</option>
+                        <option value="1 Week">1 Week</option>
+                        <option value="2 Weeks">2 Weeks</option>
+                        <option value="1 Month+">1 Month+</option>
+                    </select>
+
+                    <!-- Search Button -->
+                    <button 
+                        type="submit" 
+                        class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+                    >
+                        Find Plans
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Featured Travel Plans Section -->
+        <section class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center mb-12">Popular Travel Plans</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {% for plan in plans %}
+<a href="{% url 'view_plan' plan.pk %}" class="block hover:no-underline">
+                            <article class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 transition-transform hover:scale-105 cursor-pointer">
+                                {% if plan.image %}
+                                    <img src="#" alt="{{ plan.destination }}" class="w-full h-48 object-cover">
+                                {% endif %}
+                                <div class="p-6">
+                                    <div class="flex items-center space-x-2 mb-4">
+                                        
+                                        <span class="text-gray-500 text-sm">No of days:{{ plan.duration }}</span>
+                                    </div>
+                                    <h2 class="text-xl font-semibold mb-2 text-gray-900">{{ plan.destination }}</h2>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-sm text-gray-700">By {{ user.username }}</span>
+                                        </div>
+                                        <span class="text-blue-600 text-sm">{{ plan.budget }}</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Features Section -->
+        <section class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center mb-12">WHY CHOOSE TRAVELAI?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center p-6">
+                        <div class="text-blue-600 text-4xl mb-4">🎯</div>
+                        <h3 class="text-xl font-semibold mb-3">Personalized Planning</h3>
+                        <p class="text-gray-600">Our AI analyzes your preferences to create the perfect itinerary</p>
+                    </div>
+                    <div class="text-center p-6">
+                        <div class="text-blue-600 text-4xl mb-4">⚡</div>
+                        <h3 class="text-xl font-semibold mb-3">Real-Time Updates</h3>
+                        <p class="text-gray-600">Stay informed with live weather, pricing, and availability updates</p>
+                    </div>
+                    <div class="text-center p-6">
+                        <div class="text-blue-600 text-4xl mb-4">👥</div>
+                        <h3 class="text-xl font-semibold mb-3">Community Insights</h3>
+                        <p class="text-gray-600">Access tips and recommendations from fellow travelers</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center mb-12">TRAVELER STORIES</h2>
+                <div class="relative bg-white rounded-lg shadow-lg max-w-3xl mx-auto overflow-hidden">
+                    <div id="carousel-content" class="flex transition-transform duration-500">
+                        <!-- Testimonial 1 -->
+                        <div class="min-w-full p-8">
+                            <blockquote class="text-gray-700 px-6 text-lg italic">
+                                "TravelAI created the perfect itinerary for my family vacation to Japan. The AI suggestions were spot-on, and the real-time updates saved us from bad weather days!"
+                            </blockquote>
+                            <p class="mt-4 px-6 font-semibold">- Alex Chen</p>
+                        </div>
+                        <!-- Testimonial 2 -->
+                        <div class="min-w-full p-8">
+                            <blockquote class="text-gray-700 px-6 text-lg italic">
+                                "Planning my Europe backpacking trip was a breeze with TravelAI. The budget optimization features helped me save significantly while hitting all my must-see spots."
+                            </blockquote>
+                            <p class="mt-4 px-6 font-semibold">- Maria Garcia</p>
+                        </div>
+                        <!-- Testimonial 3 -->
+                        <div class="min-w-full p-8">
+                            <blockquote class="text-gray-700 px-6 text-lg italic">
+                                "The community features connected me with local experts who enhanced my travel experience. Best travel planning platform ever!"
+                            </blockquote>
+                            <p class="mt-4 px-6 font-semibold">- James Wilson</p>
+                        </div>
+                    </div>
+                    <!-- Navigation Arrows -->
+                    <button id="prev" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-blue-500 rounded-full p-2 hover:bg-blue-600 text-white">
+                        <
+                    </button>
+                    <button id="next" class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-blue-500 rounded-full p-2 hover:bg-blue-600 text-white">
+                        >
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}

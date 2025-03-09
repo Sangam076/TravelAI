@@ -1,0 +1,15 @@
+{% for hotel in hotels %}
+    <h2>{{ hotel.name }}</h2>
+    <p>Location: {{ hotel.city }}</p>
+    <p>Price: ${{ hotel.price }}</p>
+    <form action="{% url 'book_hotel' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="hotel_name" value="{{ hotel.name }}">
+        <input type="hidden" name="city" value="{{ hotel.city }}">
+        <input type="hidden" name="check_in" value="2024-03-01">
+        <input type="hidden" name="check_out" value="2024-03-05">
+        <input type="hidden" name="total_price" value="{{ hotel.price }}">
+        <input type="hidden" name="booking_reference" value="{{ hotel.id }}">
+        <button type="submit">Book Now</button>
+    </form>
+{% endfor %}

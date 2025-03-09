@@ -1,0 +1,16 @@
+{% for flight in flights %}
+    <h2>Flight: {{ flight.flightNumber }}</h2>
+    <p>From: {{ flight.departure }}</p>
+    <p>To: {{ flight.arrival }}</p>
+    <p>Price: ${{ flight.price }}</p>
+    <form action="{% url 'book_flight' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="flight_number" value="{{ flight.flightNumber }}">
+        <input type="hidden" name="departure_city" value="{{ flight.departure }}">
+        <input type="hidden" name="arrival_city" value="{{ flight.arrival }}">
+        <input type="hidden" name="departure_date" value="2024-03-01">
+        <input type="hidden" name="total_price" value="{{ flight.price }}">
+        <input type="hidden" name="booking_reference" value="{{ flight.id }}">
+        <button type="submit">Book Now</button>
+    </form>
+{% endfor %}

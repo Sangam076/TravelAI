@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mx-auto mt-24 mb-24 p-4 max-w-4xl">
+    <!-- Profile Section -->
+    <div class="flex items-center space-x-6">
+        <!-- Profile Picture -->
+        <div class="w-24 h-24 rounded-full overflow-hidden">
+            <img src="{{ user.profile.photo.url }}" alt="Profile Picture" class="w-full h-full object-cover">
+        </div>
+
+        <!-- Profile Info -->
+        <div>
+            <h2 class="text-2xl font-semibold">{{ user.username }}</h2>
+            <p class="text-gray-600">{{ user.profile.bio }}</p>
+            <a href="{{ user.profile.twitter }}" target="_blank" class="text-blue-500 hover:underline">
+                Twitter
+            </a>
+            <a href="{{ user.profile.instagram }}" target="_blank" class="text-blue-500 hover:underline">
+                Instagram
+            </a>
+            <a href="{{ user.profile.linkedin }}" target="_blank" class="text-blue-500 hover:underline">
+                Linkedin
+            </a>
+        </div>
+
+        <!-- Edit Profile Button -->
+        <div class="ml-auto">
+            <button id="edit-profile-btn" class="bg-gray-200 px-4 py-2 rounded-md text-sm font-medium">
+                Edit Profile
+            </button>
+        </div>
+    </div>
+
+    <!-- Edit Profile Form (Hidden by Default) -->
+    <div id="edit-profile-form" class="hidden mt-6 bg-gray-50 p-6 rounded-lg shadow-md">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label for="bio" class="block text-sm font-medium text-gray-700">Bio</label>
+                    <textarea id="bio" name="bio" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ user.profile.bio }}</textarea>
+                </div>
+                <div>
+                    <label for="photo" class="block text-sm font-medium text-gray-700">Profile Photo</label>
+                    <input type="file" id="photo" name="photo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="twitter" class="block text-sm font-medium text-gray-700">Twitter</label>
+                    <input type="text" id="twitter" name="twitter" value="{{ user.profile.twitter }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="instagram" class="block text-sm font-medium text-gray-700">Instagram</label>
+                    <input type="text" id="instagram" name="instagram" value="{{ user.profile.instagram }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="linkedin" class="block text-sm font-medium text-gray-700">LinkedIn</label>
+                    <input type="text" id="linkedin" name="linkedin" value="{{ user.profile.linkedin }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
+                    <button type="button" id="cancel-edit-btn" class="bg-gray-500 text-white px-4 py-2 rounded-md ml-2">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Travel Plans Grid -->
+    <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4">
+        {% if plans %}
+            {% for plan in plans %}
+                <div class="relative group bg-gray-100 p-4 rounded-lg shadow-md cursor-pointer">
+                    <p class="text-lg font-semibold">{{ plan.destination }}</p>
+                    <p class="text-sm text-gray-500">{{ plan.duration }} days | ₹{{ plan.budget }}</p>
+                    <p class="text-xs text-gray-400">Created: {{ plan.created_at|date:"M d, Y" }}</p>
+
+                    <!-- Hover Effect for Plan Options -->
+                    <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <a href="{% url 'view_plan' plan.id %}" class="text-white font-semibold hover:underline">
+                            View Plan
+                        </a>
+                        
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-500 text-center col-span-3">You haven't saved any travel plans yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editProfileBtn = document.getElementById('edit-profile-btn');
+        const editProfileForm = document.getElementById('edit-profile-form');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
+        editProfileBtn.addEventListener('click', function() {
+            editProfileForm.classList.remove('hidden');
+        });
+
+        cancelEditBtn.addEventListener('click', function() {
+            editProfileForm.classList.add('hidden');
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editProfileBtn = document.getElementById('edit-profile-btn');
+        const editProfileForm = document.getElementById('edit-profile-form');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const profileForm = editProfileForm.querySelector('form');
+
+        editProfileBtn.addEventListener('click', function() {
+            editProfileForm.classList.remove('hidden');
+        });
+
+        cancelEditBtn.addEventListener('click', function() {
+            editProfileForm.classList.add('hidden');
+        });
+
+        profileForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(profileForm);
+
+            fetch('{% url "edit_profile" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the profile info on the page
+                    document.querySelector('.text-gray-600').textContent = data.bio;
+                    document.querySelector('img').src = data.photo_url;
+                    document.querySelector('a[href*="twitter"]').href = data.twitter;
+                    document.querySelector('a[href*="instagram"]').href = data.instagram;
+                    document.querySelector('a[href*="linkedin"]').href = data.linkedin;
+
+                    // Hide the form
+                    editProfileForm.classList.add('hidden');
+                } else {
+                    alert('Error updating profile');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ plan.destination }} Travel Plan{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-blue-50 to-white min-h-screen pt-20 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="printArea">
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-900">{{ plan.destination }}</h1>
+                <p class="text-gray-600 text-lg mt-2">Your personalized travel experience</p>
+            </div>
+            <a href="{% url 'create_plan' %}" class="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center shadow-md print:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Create New Plan
+            </a>
+            
+        </div>
+
+        <!-- Trip Overview -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Trip Overview
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-blue-50 rounded-lg p-4 shadow-sm">
+                    <p class="text-gray-600 text-sm uppercase tracking-wider">Duration</p>
+                    <p class="text-xl font-semibold text-gray-900">{{ plan.duration }} days</p>
+                </div>
+                <div class="bg-green-50 rounded-lg p-4 shadow-sm">
+                    <p class="text-gray-600 text-sm uppercase tracking-wider">Budget</p>
+                    <p class="text-xl font-semibold text-gray-900">{{ plan.budget|title }}</p>
+                </div>
+                <div class="bg-yellow-50 rounded-lg p-4 shadow-sm">
+                    <p class="text-gray-600 text-sm uppercase tracking-wider">Group Type</p>
+                    <p class="text-xl font-semibold text-gray-900">{{ plan.group_type|title }}</p>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-4 shadow-sm">
+                    <p class="text-gray-600 text-sm uppercase tracking-wider">Interests</p>
+                    <p class="text-xl font-semibold text-gray-900">{{ plan.interests }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Time to Visit -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border-l-4 border-green-500">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Best Time to Visit
+            </h2>
+            <div class="prose max-w-none text-lg">{{ plan.best_time_to_visit|linebreaks }}</div>
+        </div>
+
+        <!-- Main Content Tabs -->
+        <div x-data="{ activeTab: 'itinerary' }" class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
+            <!-- Tab Navigation -->
+            <div class="flex overflow-x-auto border-b border-gray-200 bg-gray-50 px-4 print:hidden">
+                <button @click="activeTab = 'itinerary'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'itinerary', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'itinerary' }" class="py-4 px-6 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap">
+                    Daily Itinerary
+                </button>
+                <button @click="activeTab = 'places'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'places', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'places' }" class="py-4 px-6 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap">
+                    Must-Visit Places
+                </button>
+                <button @click="activeTab = 'activities'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'activities', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'activities' }" class="py-4 px-6 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap">
+                    Activities
+                </button>
+                <button @click="activeTab = 'restaurants'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'restaurants', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'restaurants' }" class="py-4 px-6 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap">
+                    Restaurants
+                </button>
+                <button @click="activeTab = 'packing'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'packing', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'packing' }" class="py-4 px-6 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap">
+                    Packing List
+                </button>
+                <button @click="activeTab = 'budget'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'budget', 'border-transparent text-gray-500 hover:text-gray-700': activeTab !== 'budget' }" class="py-4 px-6 border-b-2 font-medium text-sm sm:text-base whitespace-nowrap">
+                Budget Breakdown
+            </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-6">
+                <!-- For printing: All sections are visible -->
+                <div class="hidden print:block space-y-8">
+                    <!-- Itinerary Print Section -->
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Daily Itinerary
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.itinerary|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Places Print Section -->
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Must-Visit Places
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.places_to_visit|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Activities Print Section -->
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Top Activities
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.activities|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Restaurants Print Section -->
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Local Restaurants
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.restaurants|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Packing Print Section -->
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            Packing Checklist
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.packing_checklist|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive tabs for screen view -->
+                <div class="print:hidden">
+                    <!-- Itinerary Tab -->
+                    <div x-show="activeTab === 'itinerary'" class="space-y-6">
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Daily Itinerary
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.itinerary|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Places Tab -->
+                    <div x-show="activeTab === 'places'" class="space-y-4" x-cloak>
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Must-Visit Places
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.places_to_visit|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Activities Tab -->
+                    <div x-show="activeTab === 'activities'" class="space-y-4" x-cloak>
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Top Activities
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.activities|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Restaurants Tab -->
+                    <div x-show="activeTab === 'restaurants'" class="space-y-4" x-cloak>
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Local Restaurants
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.restaurants|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Packing Tab -->
+                    <div x-show="activeTab === 'packing'" class="space-y-4" x-cloak>
+                        <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            Packing Checklist
+                        </h2>
+                        <div class="prose max-w-none">
+                            {{ plan.packing_checklist|linebreaks }}
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+            <!-- For printing: All sections are visible -->
+            <div class="hidden print:block space-y-8">
+                <!-- Previous print sections -->
+
+                <!-- Budget Print Section -->
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 100-4 2 2 0 000 4z" />
+                        </svg>
+                        Budget Breakdown
+                    </h2>
+                    <div class="prose max-w-none">
+                        {{ plan.budget_breakdown|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive tabs for screen view -->
+            <div class="print:hidden">
+                <!-- Previous tabs -->
+
+                <!-- Budget Tab -->
+                <div x-show="activeTab === 'budget'" class="space-y-4" x-cloak>
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 100-4 2 2 0 000 4z" />
+                        </svg>
+                        Budget Breakdown
+                    </h2>
+                    <div class="prose max-w-none">
+                        {{ plan.budget_breakdown|linebreaks }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Print & Share Actions -->
+       <div class="flex flex-wrap gap-4 justify-center print:hidden">
+    
+
+    {% if not plan.is_saved %}
+    <div class="save-action">
+        <a href="{% url 'save_plan' plan.pk %}" 
+           class="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7v14" />
+            </svg>
+            Save
+        </a>
+    </div>
+    {% else %}
+    <div class="saved-badge">
+        <span class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Saved
+        </span>
+    </div>
+    {% endif %}
+
+    <div class="share-action">
+        <a href="{% url 'share_plan' plan.pk %}" 
+           class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            Share Plan
+        </a>
+        {% for invite in plan.planinvite_set.all %}
+    {% if invite.accepted %}
+        ✅ {{ invite.receiver.username }} has joined
+    {% else %}
+        ⏳ {{ invite.receiver.username }} - Invite Pending
+    {% endif %}
+{% endfor %}
+    </div>
+
+    <button id="downloadPdfButton" 
+            class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Download PDF
+    </button>
+</div>
+
+    </div>
+</div>
+
+<!-- Share Modal -->
+<div id="shareModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Share Travel Plan</h3>
+            <button id="closeShareModal" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="mb-4">
+            <label id= "share-plan-button" class="block text-gray-700 mb-2">Share with chatroom members:</label>
+            <div class="space-y-2 max-h-40 overflow-y-auto border p-2 rounded">
+                <div id="user-selection-modal" style="display:none;">
+    <div id="user-list-container">
+        <!-- Users will be dynamically populated here -->
+    </div>
+    <textarea id="share-message" placeholder="Optional message"></textarea>
+    <button id="share-confirm-button">Confirm Share</button>
+</div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Message (optional):</label>
+            <textarea id="shareMessage" class="w-full border rounded p-2" rows="2" placeholder="Check out my travel plan!"></textarea>
+        </div>
+        <button id="confirmShare" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Share</button>
+    </div>
+</div>
+
+<!-- Alpine.js (for tabs functionality) -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<!-- html2pdf.js for PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- Custom Scripts -->
+
+
+    <script>
+        // Add this to your existing template or a separate JS file
+document.addEventListener('DOMContentLoaded', function() {
+    const shareButton = document.getElementById('share-plan-button');
+    const userSelectionModal = document.getElementById('user-selection-modal');
+    const userListContainer = document.getElementById('user-list-container');
+    const shareConfirmButton = document.getElementById('share-confirm-button');
+
+    // Fetch users when share button is clicked
+    shareButton.addEventListener('click', function() {
+        fetch('/get-shareable-users/')  // Update with your actual URL
+            .then(response => response.json())
+            .then(data => {
+                // Clear previous list
+                userListContainer.innerHTML = '';
+                
+                // Populate user list
+                data.users.forEach(user => {
+                    const userItem = document.createElement('div');
+                    userItem.innerHTML = `
+                        <input type="checkbox" 
+                               name="selected_users" 
+                               value="${user.id}" 
+                               id="user-${user.id}">
+                        <label for="user-${user.id}">
+                            ${user.username} (${user.email})
+                        </label>
+                    `;
+                    userListContainer.appendChild(userItem);
+                });
+
+                // Show modal
+                userSelectionModal.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+                alert('Failed to load users');
+            });
+    });
+
+    // Handle share confirmation
+    shareConfirmButton.addEventListener('click', function() {
+        const selectedUsers = Array.from(
+            document.querySelectorAll('input[name="selected_users"]:checked')
+        ).map(el => el.value);
+
+        if (selectedUsers.length === 0) {
+            alert('Please select at least one user');
+            return;
+        }
+
+        const formData = new FormData();
+        selectedUsers.forEach(userId => {
+            formData.append('selected_users', userId);
+        });
+        formData.append('message', document.getElementById('share-message').value);
+
+        fetch(`/share-travel-plan/${planId}/`, {  // Update with your actual URL
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')  // Ensure CSRF protection
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                userSelectionModal.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error sharing plan:', error);
+            alert('Failed to share plan');
+        });
+    });
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+    </script>
+
+<!-- Print stylesheet -->
+
+{% endblock %}      

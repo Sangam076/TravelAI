@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Hotel Search Results{% endblock %}
+
+{% block content %}
+<div class="pt-20 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Search Summary Section -->
+<div class="bg-blue-600 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl font-bold text-white mb-4">Hotels in {{ city_name|default:"New York" }}</h1>
+        <div class="flex justify-center flex-wrap gap-4 text-xl text-white mb-2">
+            <span>{{ checkin_date|default:"2025-06-16" }} - {{ checkout_date|default:"2025-06-17" }}</span>
+            <span>{{ total_nights|default:"1" }} night{% if total_nights > 1 %}s{% endif %}</span>
+            <span>{{ adults_number|default:"2" }} adult{% if adults_number > 1 %}s{% endif %}</span>
+            {% if children_number and children_number != "0" %}
+            <span>{{ children_number }} child{% if children_number != "1" %}ren{% endif %}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+        <!-- Filter Section -->
+       
+
+        <!-- Results Section -->
+        <div class="space-y-6">
+            {% if results.result %}
+                {% for hotel in results.result %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                    <div class="md:flex">
+                        <!-- Hotel Image -->
+                        <div class="md:w-1/4 h-48 md:h-auto relative">
+                            {% if hotel.max_photo_url %}
+                            <img src="{{ hotel.max_photo_url }}" alt="{{ hotel.hotel_name }}" 
+                                 class="w-full h-full object-cover" loading="lazy">
+                            {% else %}
+                            <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                                No image available
+                            </div>
+                            {% endif %}
+                            
+                            {% if hotel.is_free_cancellable %}
+                            <div class="absolute top-2 left-0 bg-green-600 text-white text-xs font-medium px-2 py-1 rounded-r">
+                                Free cancellation
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Hotel Details -->
+                        <div class="md:w-2/4 p-4 border-b md:border-b-0 md:border-r border-gray-200">
+                            <div class="mb-2">
+                                <h2 class="text-lg font-semibold text-blue-700">{{ hotel.hotel_name }}</h2>
+                                
+                                {% if hotel.class %}
+                                <div class="flex text-yellow-400 mt-1">
+                                    {% for i in "x"|rjust:hotel.class %}
+                                    <span>★</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Location -->
+                            <div class="flex items-start text-sm text-gray-600 mb-3">
+                                <span class="text-blue-600 mr-1">📍</span>
+                                <div>
+                                    <span>{{ hotel.address_trans }}, {{ hotel.city_trans }}</span>
+                                    {% if hotel.distance_to_cc %}
+                                    <div class="mt-1 inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">
+                                        {{ hotel.distance_to_cc_formatted }} from center
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Additional Details -->
+                            <div class="space-y-2 mb-3">
+                                {% if hotel.unit_configuration_label %}
+                                <div class="flex items-center text-sm text-gray-700">
+                                    <span class="text-blue-600 mr-2">🛏️</span>
+                                    <span>{{ hotel.unit_configuration_label }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if hotel.ribbon_text %}
+                                <div class="flex items-center text-sm text-gray-700">
+                                    <span class="text-blue-600 mr-2">✓</span>
+                                    <span>{{ hotel.ribbon_text }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Reviews -->
+                            <div class="flex items-center mt-auto">
+                                {% if hotel.review_score %}
+                                <div class="flex items-center bg-blue-700 text-white px-2 py-1 rounded">
+                                    <span class="font-bold mr-1">{{ hotel.review_score }}</span>
+                                    <span class="text-sm">{{ hotel.review_score_word }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if hotel.review_nr %}
+                                <span class="text-sm text-gray-600 ml-2">{{ hotel.review_nr }} reviews</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Price & Booking Details -->
+                        <div class="md:w-1/4 p-4 flex flex-col justify-between bg-gray-50">
+                            {% if hotel.composite_price_breakdown.all_inclusive_amount %}
+                            <div class="text-right">
+                                <div class="text-xl font-bold text-gray-900">
+                                    {{ hotel.composite_price_breakdown.all_inclusive_amount.currency }} 
+                                    {{ hotel.composite_price_breakdown.all_inclusive_amount.value|floatformat:0 }}
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    <div>for {{ total_nights|default:"1" }} night{% if total_nights > 1 %}s{% endif %}</div>
+                                    <div>includes taxes & fees</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="space-y-2 my-4 text-right">
+                                {% if hotel.is_free_cancellable %}
+                                <div class="text-sm text-green-600 font-medium">Free cancellation</div>
+                                {% endif %}
+                                
+                                {% if hotel.is_no_prepayment_block %}
+                                <div class="text-sm text-green-600 font-medium">No prepayment needed</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <a href="{% url 'hotel_detail' hotel.hotel_id %}" 
+                                   class="block w-full bg-blue-600 text-white text-center px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">No hotels found for your search criteria</h2>
+                    <p class="text-gray-600">Try adjusting your search parameters or try a different location.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if results.result and results.count > 25 %}
+        <div class="flex justify-center items-center space-x-4 mt-8">
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed" 
+                    {% if page == 0 %}disabled{% endif %}>
+                Previous
+            </button>
+            <span class="text-sm text-gray-600">Page {{ page|add:"1" }} of {{ total_pages }}</span>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed" 
+                    {% if page >= total_pages|add:"-1" %}disabled{% endif %}>
+                Next
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

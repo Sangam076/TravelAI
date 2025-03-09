@@ -1,0 +1,6 @@
+<h2>{{ hotel.name }}</h2>
+<p>{{ hotel.address }}</p>
+<p>Rating: {{ hotel.rating }}</p>
+<a href="{% url 'hotel_photos' hotel.hotel_id %}">View Photos</a> |
+<a href="{% url 'hotel_payment' hotel.hotel_id %}">Payment Options</a> |
+<a href="{% url 'book_hotel' hotel.hotel_id %}">Book Now</a>

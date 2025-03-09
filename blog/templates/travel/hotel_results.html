@@ -1,0 +1,16 @@
+<h2>Hotel Search Results for "{{ city }}"</h2>
+
+{% if hotels %}
+    <ul>
+        {% for hotel in hotels %}
+            <li>
+                <h3>{{ hotel.name }}</h3>
+                <p>Country: {{ hotel.country }}</p>
+                <p>Region: {{ hotel.region }}</p>
+                <p>City: {{ hotel.city_name }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No hotels found for "{{ city }}". Try a different city.</p>
+{% endif %}
