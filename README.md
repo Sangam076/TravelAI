@@ -1,110 +1,74 @@
-<<<<<<< HEAD
-# AI-Powered-Travel-Planner
-All-in-One Travel App
-=======
-# Blog-Everyday
-
-## Overview
-
-Blog-Everyday is a feature-rich blogging platform built using the Django framework for the backend and Tailwind CSS for the frontend. The platform enables users to perform CRUD operations on blog posts, create and manage profiles, and interact with other users through comments and blog posts. It also integrates TinyMCE, a rich text editor, for enhanced blog post customization. The website features an authentication system with user registration and login, and the admin section is protected and accessible only by superusers.
-
-## Features
-
-- **User Authentication**: 
-  - Users can register, log in, and manage their sessions.
-  - Authentication system is built with Django's built-in user model and session management.
-  
-- **Profile Management**: 
-  - Users can view and edit their own profiles.
-  - Users can view other profiles and explore their blog posts.
-
-- **CRUD Operations for Blog Posts**: 
-  - Users can create, read, update, and delete their own blog posts.
-  - Rich text editing is enabled for blog posts using **TinyMCE** for better customization.
-
-- **Tailwind CSS Integration**: 
-  - The frontend is styled using **Tailwind CSS** to create a modern, responsive, and customizable interface.
-
-- **Admin Section**: 
-  - The admin section is secured and can only be accessed by superusers.
-
-## Technologies Used
-
-- **Backend**: Django (Python Web Framework)
-- **Frontend**: Tailwind CSS, Html, Javascript
-- **Rich Text Editor**: TinyMCE (for blog post creation and customization)
-- **Database**: SQLite 
-- **Authentication**: Django’s built-in authentication system
-- **Admin Panel**: Django's Admin, restricted to superusers only
-
-## Installation
-
-To set up this project locally, follow these steps:
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Sangam076/Blog-Everyday.git
-
-2. **Navigate to the project directory**:
-   ```bash
-   cd Blog-Everyday
-
-3. **Apply database migrations: Set up the database by running the migrations**:
-   ```bash
-   python manage.py migrate
-   
-4.  **Create a superuser (optional, for accessing the admin panel)**:
-    ```bash
-    python manage.py createsuperuser
+### **📌 AI-Powered Travel Planner**  
+🚀 **An AI-driven travel planning web app that helps users create personalized itineraries using Google's Gemini AI.**  
 
 
-6. **Run the development server: Start the Django development server to view the application**:
-   ```bash
-   python manage.py runserver
+---
 
-7. **The website will be available at http://127.0.0.1:8000/.**
+## **🌟 Features**  
 
-Usage
-User Authentication:
-Register and log in to start creating, editing, and managing blog posts.
+### 🔹 **AI-Powered Itinerary Generation**  
+- Uses **Gemini AI** to provide **personalized travel plans** based on user preferences.  
+- Suggests the best **places to visit, activities, and food recommendations.**  
 
-Profile:
-View your own profile and the profiles of other users. You can edit your own profile details.
+### 📍 **Travel Guide**  
+- Offers detailed **information** about destinations, including landmarks, culture, and travel tips.  
 
-Blog Management:
-Use the TinyMCE editor to write and customize your blog posts with rich text formatting.
-Admin Access:
-The admin section is available to superusers for managing blog posts, users, and other data.
+### 💬 **Chat System**  
+- Integrated chat feature for users to **communicate with friends and family**.  
+- Share itineraries and discuss travel plans with ease.  
 
-Contributing
-Contributions are welcome! To contribute to the project:
-Fork the repository.
-Create a new branch (git checkout -b feature-name).
-Make your changes and commit them (git commit -am 'Add new feature').
-Push your changes to your fork (git push origin feature-name).
-Submit a pull request for review.
+### 🏨 **Seamless Booking Integration**  
+- Uses **third-party APIs** to provide real-time booking for:  
+  ✅ **Hotels**  
+  ✅ **Flights**  
+  ✅ **Car Rentals**  
 
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
+### 👤 **User Profile & Saved Plans**  
+- Users can **save their travel plans** and **share them via chat**.  
+- View previous trips and manage upcoming adventures.  
 
-Acknowledgements
-Django: The framework powering the backend and API.
-Tailwind CSS: For building the responsive and modern user interface.
-TinyMCE: For the rich text editor functionality.
-Django Admin: For managing and administrating the application content.
-markdown
+---
 
+## **🚀 Installation & Setup**  
 
-### Key sections:
+### **1️⃣ Clone the Repository**  
+```sh
+git clone https://github.com/Sangam076/TravelAI.git
+cd TravelAI
+```
 
-- **Overview**: A clear description of the project, its features, and its purpose.
-- **Features**: A detailed list of functionalities, highlighting CRUD operations, profile management, and TinyMCE integration.
-- **Technologies Used**: A summary of the tech stack.
-- **Installation**: A step-by-step guide for setting up the project locally.
-- **Usage**: Instructions on how users can interact with the platform after installation.
-- **Contributing**: How others can contribute to the project.
-- **License**: MIT license.
-- **Acknowledgements**: Credit to the key technologies and frameworks used.
+### **2️⃣ Install Dependencies**  
+```sh
+pip install -r requirements.txt
 
+```
 
->>>>>>> e97332c (Initial commit - Travel Planner App)
+### **3️⃣ Set Up API Keys**  
+- Get **Gemini AI API Key** and configure it in `.env` file.  
+- Add third-party API keys for **hotels, flights, and car rentals**.  
+
+### **4️⃣ Run the Application**  
+For Django Backend:  
+```sh
+python manage.py runserver
+```
+
+---
+
+## **🛠️ Tech Stack**  
+🔹 **Backend:** Django 
+🔹 **Frontend:** Html, Tailwind, Javascript  
+🔹 **AI Model:** Google Gemini AI  
+🔹 **Database:** SQLite 
+🔹 **APIs:** Hotel Booking, Flight, Car Rental  
+
+---
+
+## **🌍 Contributing**  
+We welcome contributions! Please follow these steps:  
+1. **Fork** the repository  
+2. **Create a new branch:** `git checkout -b feature-branch`  
+3. **Commit your changes:** `git commit -m "Added new feature"`  
+4. **Push to GitHub:** `git push origin feature-branch`  
+5. **Submit a pull request**  
+
